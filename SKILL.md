@@ -1,43 +1,48 @@
 ---
-name: byens-it-indkoeb
-description: Klargør og prissammenlign DCS-/Proshop-kurve til Byens ITs WooCommerce-PC-ordrer, komponenter, RGB og opgraderinger. Dækker enkeltordrer og ordrebatches med ordrefordeling; aflever til Magnus' kontrol uden bestilling eller betaling.
+name: order-flow
+description: Prepare repeatable business order-to-procurement workflows from customer orders, inventory and bills of materials. Reconcile demand, compare approved suppliers, and create verified carts or purchase-order drafts using available tools. Use for procurement batches, replenishment preparation and order-flow setup; execution authority and integrations come from the current task.
 ---
 
-# Byens IT indkøb
+# Order Flow
 
-Lever ordrefordeling, passende komponenter og gemte leverandørkurve til kontrol. Aktuelt mandat styrer scope; skillen autoriserer ikke køb, betaling eller WooCommerce-ændringer.
+Turn scoped customer orders into traceable procurement requirements and verified supplier carts or purchase-order drafts. Use the company's configured systems and purchasing rules, not assumptions from another business. This skill supplies instructions; it does not install integrations, start a scheduler or grant purchasing authority.
 
-## 1. Fastlæg behovet før research
+## 1. Establish the run
 
-- Brug Magnus' indloggede Chrome via computer-use og den aktuelle browserdokumentation. Genbrug faner; navngiv sessionen med ordreinterval.
-- Ved batches: fastlæg ordreinterval/status og gennemgå alle relevante listesider. Registrér inkluderede/udeladte ordrer og bekræftede lager-PC'er; køb kun deres særskilte tilvalg. Første screenshot er ikke hele ordresættet. Kopiér ikke kundekontaktdata.
-- Læs hver unik PC-specifikation én gang og hver ordres antal/variationer/tilvalg. Ordretilvalg vinder. Dæk CPU, køler, bundkort, RAM, GPU, SSD, kabinet, PSU og tilvalg. Ydelser giver kun indkøbsvarer ved konkret materialebehov. Licenser følger verificeret procedure eller markeres ikke indkøbt.
-- Behold én arbejdsliste: ordre → krav/fast model → samlet behov → kandidat/model/EAN → pris/moms/lager/levering/kilde → leverandør og gemt antal. Aggregér fælles dele; et RAM-kit er én indkøbsenhed, men kan indeholde flere DIMM'er.
-- SSD: beregn basis + opgradering. Én større disk kan dække samlet kapacitet, hvis en ekstra fysisk disk ikke kræves; dokumentér fortolkningen. Bevar lovet interface, hastighed og øvrige minimumskrav, også når modellen er fleksibel. En lavere pris autoriserer ikke en nedgradering.
+- Read the company's profile and existing private run state. For first setup, use [company setup](references/company-setup.md) and the [example profile](examples/company-profile.example.yaml). Ask only for decisions that block the task; continue independent work.
+- Record source system, order/status/date filters, warehouse, currency, supplier accounts, purchasing limits and authorized actions. Prefer an available supported API/connector; use an authorized browser session when necessary. Do not invent credentials or connector availability.
+- Enumerate every relevant source page and record included/excluded order IDs. Read each order's quantities, variants and overrides; cache shared product specifications once. Keep customer contact data out of procurement artifacts unless required and specifically authorized for the destination.
 
-## 2. Vælg og kontrollér kandidater
+## 2. Calculate what to procure
 
-- Sammenlign DCS' erhvervspris med Proshop én gang pr. unik kandidat. Identiske varer matches på model/EAN; fleksible modeller vælges i den krævede kategori. Gem direkte produktlinks til genbrug.
-- Billigste kompatible bundkort i angivet chipset er godkendt. Bevar socket, CPU-support, RAM og nødvendige porte; oplys den faktiske chipsetvariant, eksempelvis A620A.
-- Kontrollér kandidaten før tilføjelse: producentens CPU-/BIOS-support, desktop UDIMM, M.2-format, GPU-/kølerplads og PSU-effekt/stik/kabler. Ved PCIe-Wi-Fi kontrolleres slotplacering mod GPU-tykkelse. Stikantal beviser ikke separate kabler; supportlisten beviser ikke leveret BIOS.
-- DUTZO foretrækkes til RGB. Match serie, længde, antal og controller/fjernbetjening. Læs [leverandørspor](references/suppliers.md) ved RGB-valg eller kurvændringer; tilføj ikke splitter/ekstra controller uden behov.
-- Bekræft pris, moms og tilstrækkeligt lager/levering på produktside eller kurv. Brug ikke søgeuddrag som slutbevis; tom søgning betyder kun »ikke fundet«. Nye varer matches med nye varer, ikke demo uden accept.
-- Sammenlign ekskl. moms, inklusive ekstra fragt/gebyrer. Brug faktisk kurvmoms; blandede CPU-kurve kan have omvendt betalingspligt. Vælg deling ved nettobesparelse eller lagerfordel, uden et opfundet minimum. Undersøg tredje butik målrettet ved plausibel fordel; Compumail er samme CVR som DCS, ikke en uafhængig leverandør.
+- Resolve each order into its items or bill of materials, preserving promised specifications and permitted substitutions. Order overrides take precedence. Services create purchasing demand only when a concrete material requirement exists.
+- Reconcile demand with usable, unreserved inventory and confirmed inbound supply available by the required date. Do not subtract stock twice: allocate shared stock once across the batch and retain order-to-item allocations. Unknown stock is an exception, not zero or unlimited stock.
+- Aggregate remaining demand by SKU/specification. Distinguish individual pieces, packs and kits; record conversion factors and order allocations. A capacity upgrade can replace a base item only when an additional physical item is not required; explain the interpretation.
+- Keep one private ledger: order → requirement → allocated stock → shortage → supplier candidate → quoted price/tax/shipping/availability/source/time → target quantity → saved quantity/document ID → state.
 
-## 3. Gem kurvene uden dubletter
+## 3. Select suitable supply
 
-- Inspicér aktiv kurv. Brug dedikeret kurv med kort ordreinterval-navn; bevar andre kurve/uvedkommende varer.
-- Tilføj samlet behov eller forskellen til allerede gemt antal. Brug leverandørnoternes antalskontroller. Læs bekræftet model/antal efter ændring og før navigation; ved timeout læses tilstanden før gentagelse. Fjern kun egne erstattede varer.
-- Stop før bestilling, betaling, bindende accept og WooCommerce Capture/Opdatér.
+- Compare approved suppliers once per unique candidate using manufacturer part number, SKU or GTIN. Consider exact specification, available quantity, delivery deadline, minimum order, pack size, shipping and company substitution rules. A cheaper item must still satisfy the requirement.
+- Verify current prices and availability on an authoritative supplier response, product page or cart. Search snippets are leads; a failed search only means no match was found. Compare new with new unless other condition grades are permitted.
+- Normalize currency and tax basis before comparison. Use actual line/cart tax treatment, including mixed rates or reverse-charge items; do not divide a mixed total by a default tax factor. Include freight and fees per supplier; disclose unknown amounts.
+- Check domain-specific compatibility before adding items. Read [the hardware supplier example](references/suppliers.md) only for PC procurement or those suppliers. Track unresolved constraints separately; never mark missing evidence as verified.
+- Split suppliers when justified by landed cost or availability. Apply the company's explicit minimum saving or limits only if provided. Report why a faster or more expensive option was selected.
 
-## 4. Afstem og aflever
+## 4. Prepare and verify the documents
 
-- Afstem arbejdsliste mod gemte kurvlinjer én gang efter sidste ændring: hver ordre dækket, modeller/antal/kapacitet/RGB korrekte, ingen dubletter. Kontrollér totaler, faktisk moms og kendt/ukendt fragt.
-- Gem dateret ordrefordeling, prisvalg/kilder og kurvbevis i opgavemappen. Oplys uafklarede leveringsdatoer, samleforsendelse, modelafvigelser og manglende kompatibilitets-/licensbevis. Skeln mellem kurv klar til kontrol og PC fuldt verificeret til bygning.
-- Gem og embed slutbilleder med varer/beløb; brug DCS-udskrift uden andre kurvnavne. Bevar faktiske kurvfaner som deliverables. Aflever dansk og kort med beløb, væsentlige valg/forbehold og »intet bestilt«.
+- Inspect existing carts/drafts first; use a dedicated run identifier and preserve unrelated work. Reconcile desired quantity against the actual saved quantity, adding only the difference.
+- After a mutation, verify persisted model, quantity and document status before navigating away. On timeout or an ambiguous result, read the destination state before retrying. Never duplicate a submitted order to recover a lost response.
+- Prepare only actions covered by the current task. A request to prepare carts does not authorize purchase submission, payment, supplier emails, inventory reservation or order-status writeback. Follow the host's approval requirements for final actions.
+- For scheduled/event-driven runs, retries or downstream execution, read [automation and recovery](references/automation.md). Reuse an existing scheduler/ERP instead of creating a second controller.
 
-## Genoptag effektivt
+## 5. Reconcile and hand off
 
-Læs eksisterende arbejdsliste/kurvbevis først. Genbrug uændrede specifikationer og aktuelt bevis; kontrollér ændrede ordrer, kandidater, priser/lager og faktiske kurve. Genbrug aldrig historiske priser som aktuelle. Priser, kundedata og kurv-ID'er gemmes ikke i skillen.
+- Check the completed batch against saved carts/drafts once: all included orders covered, correct items/units/allocations, no duplicates, actual totals/tax and known/unknown shipping. Keep excluded and stocked orders visible in the coverage summary.
+- Save a dated private result with price sources, selected suppliers, document IDs, delivery dates and exceptions. Distinguish prepared, awaiting review, submitted and confirmed; mark executed steps only from observed confirmation.
+- Capture the relevant final UI state when browser changes require visual proof. Keep only deliverable/handoff tabs. Report completed actions, costs, blockers and the next required decision in the user's preferred language.
 
-Brug målrettede DOM-udsnit. Batch kendte opslag og handlinger, men læs frisk tilstand før adaptive valg. Undgå fulde wp-admin-dumps, gættede URL-løkker, skjult sidestate/netværkskald og faste sleeps. Tag screenshots ved slutbevis eller nødvendig visuel kompatibilitetskontrol. Hvis fuld optagelse fejler, brug ét passende udsnit med labels og beløb; gentag ikke samme fejlede optagelse.
+## Work efficiently
+
+Resume from the ledger and current destination state. Reuse unchanged specifications and still-valid evidence; refresh changed orders, inventory, candidates and time-sensitive quotes. Inspect targeted DOM fragments and batch known steps, reading fresh state before adaptive choices. Avoid guessed URL loops, hidden browser state, prohibited network access, fixed waits and repeated screenshots. After a failed full screenshot, use one suitable bounded view with labels and totals.
+
+Keep company credentials, live orders, prices, customer data and runtime identifiers in the private workspace, never in this public skill.

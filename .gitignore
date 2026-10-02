@@ -1,4 +1,10 @@
-# Private indkøbsdata og lokale beviser
+# Private business configuration, runtime state and evidence
+/company-profile.yaml
+/state/
+/runs/
+/exports/
+/artifacts/
+/screenshots/
 /private/
 /work/
 /outputs/

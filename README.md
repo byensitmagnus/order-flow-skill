@@ -1,108 +1,130 @@
 <div align="center">
 
-# Byens IT · Indkøb
+# Order Flow
 
-**Fra WooCommerce-ordre til leverandørkurve klar til kontrol.**
+### Customer orders in. Verified procurement drafts out.
 
-En dansk Codex-skill til at finde passende PC-dele, sammenligne priser og klargøre indkøb hos DCS og Proshop.
+A reusable AI skill for businesses that want to automate order preparation, reconcile inventory and source what they actually need.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-2563eb.svg)](LICENSE)
-[![Language: Dansk](https://img.shields.io/badge/Sprog-Dansk-0f766e.svg)](SKILL.md)
-[![Workflow: Review](https://img.shields.io/badge/Leverance-Kurve%20til%20kontrol-7c3aed.svg)](#hvad-du-får)
+[![Language: English](https://img.shields.io/badge/Language-English-0f766e.svg)](SKILL.md)
+[![Delivery: Agent Skill](https://img.shields.io/badge/Delivery-Agent%20Skill-7c3aed.svg)](SKILL.md)
 
-[Læs skillen](SKILL.md) · [Leverandørspor](references/suppliers.md) · [Rapportér et problem](https://github.com/byensitmagnus/byens-it-indkoeb/issues)
+[Get started](#get-started) · [Read the skill](SKILL.md) · [Configure your business](references/company-setup.md) · [Automation guide](references/automation.md)
 
 </div>
 
 ---
 
-## Hvad du får
+## From manual purchasing to a repeatable order flow
 
-| Område | Skillens arbejde |
+Order Flow guides an AI agent through the preparation work between incoming customer orders and supplier purchasing. It reads the scoped orders, applies product requirements, allocates available stock, compares approved suppliers and prepares traceable carts or purchase-order drafts.
+
+**This repository contains an agent instruction package and setup guides.** The agent uses tools and accounts available in your environment. It does not ship an ERP connector, background service, scheduler or checkout bot.
+
+## What it helps automate
+
+| Stage | Outcome |
 |---|---|
-| **Ordreoverblik** | Afgrænser enkeltordrer eller batches og fordeler dele pr. ordre. |
-| **Komponenter** | Dækker CPU, køler, bundkort, RAM, GPU, SSD, kabinet, PSU og tilvalg. |
-| **Prisvalg** | Sammenligner DCS og Proshop samt målrettede alternativer med fragt og moms. |
-| **Kompatibilitet** | Kontrollerer blandt andet BIOS, RAM, plads, strømstik og PCIe-Wi-Fi. |
-| **Kurve** | Aggregérer antal, bevarer andre varer og kontrollerer gemte mængder. |
-| **Aflevering** | Giver ordrefordeling, prisbevis, billeder og tydelige uafklarede punkter. |
+| **Order intake** | A complete, scoped batch with variants, overrides and deadlines. |
+| **Demand planning** | Item/BOM requirements linked back to each customer order. |
+| **Inventory reconciliation** | Shared stock allocated once; shortages and unknowns made explicit. |
+| **Supplier selection** | Suitable supply compared on quantity, delivery and landed cost. |
+| **Draft preparation** | Verified supplier carts or purchase-order drafts without duplicate additions. |
+| **Review and recovery** | Saved state, exception reporting and an auditable handoff. |
 
-**Leverancen er kurve til menneskelig gennemgang.** Skillen afgiver ikke bestillinger, betaler ikke og ændrer ikke WooCommerce-ordrer.
-
-## Sådan fungerer det
+Useful for retailers, assemblers, workshops and small manufacturers whose order requirements and stock are accessible through their configured systems.
 
 ```mermaid
 flowchart LR
-    A[Ordre og tilvalg] --> B[Behov pr. ordre]
-    B --> C[Pris og kompatibilitet]
-    C --> D[DCS og Proshop-kurve]
-    D --> E[Afstemning og gennemgang]
+    A[Customer orders] --> B[Requirements and BOM]
+    B --> C[Stock allocation]
+    C --> D[Supplier comparison]
+    D --> E[Carts or PO drafts]
+    E --> F[Reconcile and review]
 ```
 
-Fælles komponenter undersøges én gang og købes i samlet antal. Hver ordres tilvalg bevares. Bekræftede lager-PC'er udløser kun indkøb af særskilte tilvalg.
+## Get started
 
-## Installation
+### 1. Install the skill
 
-Du skal have **Git**, **Codex med lokale skills** og en tilgængelig **computer-use-forbindelse til Chrome**. Leverandørsessioner og nødvendige logins håndteres i dit eget miljø; repoet indeholder ingen adgangsoplysninger.
-
-Klon repoet til Codex' personlige skill-mappe. Hvis `byens-it-indkoeb` allerede findes, sammenlign og opdatér den eksisterende installation i stedet for at overskrive lokale tilpasninger.
+With Git and Codex available, clone into the personal skills directory. If `order-flow` already exists, compare the existing installation before updating it.
 
 **Windows · PowerShell**
 
 ```powershell
-git clone https://github.com/byensitmagnus/byens-it-indkoeb.git "$env:USERPROFILE\.codex\skills\byens-it-indkoeb"
+git clone https://github.com/byensitmagnus/order-flow-skill.git "$env:USERPROFILE\.codex\skills\order-flow"
 ```
 
 **macOS / Linux**
 
 ```bash
-git clone https://github.com/byensitmagnus/byens-it-indkoeb.git "$HOME/.codex/skills/byens-it-indkoeb"
+git clone https://github.com/byensitmagnus/order-flow-skill.git "$HOME/.codex/skills/order-flow"
 ```
 
-Ved et særskilt `CODEX_HOME` bruges dets `skills`-mappe. Åbn en ny Codex-session, og bed om at bruge `$byens-it-indkoeb`. Skillen kan også vælges automatisk til relevante indkøbsopgaver.
+If you use a custom `CODEX_HOME`, use its `skills` directory. Open a new Codex session and invoke `$order-flow`. Other skill-capable agents may adapt the instructions to their own tool and installation conventions; compatibility is not claimed as tested.
 
-## Eksempler
+### 2. Configure your business
 
-**Én ordre**
+Copy [the example company profile](examples/company-profile.example.yaml) to a **private workspace** as `company-profile.yaml`. Specify your order source, inventory/BOM sources, suppliers, currency and authorized actions.
 
-> Brug $byens-it-indkoeb til ordre #12345. Sammenlign DCS og Proshop, og læg de passende dele i kurvene til min kontrol.
+Provide supported connectors/APIs or authorized browser sessions for those systems. Start with preparation only and a small representative batch. The [setup guide](references/company-setup.md) explains what must be verified before relying on connected automation.
 
-**Flere ordrer**
+### 3. Run a scoped batch
 
-> Brug $byens-it-indkoeb til alle ordrer med status Behandler fra #12345 og nyere. Lav en samlet ordrefordeling og leverandørkurve. De brugte PC'er står på lager; køb kun deres øvrige tilvalg.
+> Use $order-flow with our private company profile. Process customer orders currently marked Processing for the specified date range. Allocate usable stock, calculate shortages, compare our approved suppliers and prepare carts or purchase-order drafts. Save the allocation ledger and report exceptions. Do not submit purchases or change source order statuses.
 
-**Fortsæt et eksisterende indkøb**
+### 4. Add repeatable execution when needed
 
-> Brug den gemte ordrefordeling og kurvbeviser. Opdatér de ændrede behov og aktuelle priser uden at tilføje allerede gemte varer igen.
+> Use $order-flow to map our existing scheduler to this preparation workflow. Define a stable run scope, persistent checkpoints, duplicate prevention and an exception review step. Identify any missing connectors before enabling the schedule.
 
-## Valg og begrænsninger
+The [automation guide](references/automation.md) covers triggers, retries, shared-stock allocation and approval boundaries. Enabling a schedule requires an explicit task and an available executor; installing this skill does not start recurring work.
 
-- **Krav før pris:** En billigere kandidat skal opfylde ordren og produktets lovede specifikationer.
-- **Bundkort:** Billigste kompatible model i det krævede chipset; den faktiske variant fremgår.
-- **RGB:** DUTZO foretrækkes. Serie, strip-længde, antal og controller skal passe til tilvalget.
-- **Moms:** Faktisk kurvmoms bruges, fordi blandede komponentkurve kan have forskellig momsbehandling.
-- **Aktualitet:** Leverandørspor er daterede genveje. Priser, lager, fragt og BIOS på leverede kort kræver aktuelle oplysninger.
+## Example: buy the shortage, not the whole order
 
-En kurv kan være klar til kontrol, selv om en leveringsdato, licensprocedure eller fysisk kabelkontrol stadig er uafklaret. Sådanne punkter skal fremgå af afleveringen.
+Two customer orders require six units of the same item. Three usable units are available and allocated once. Procurement demand is **three units**. If the supplier sells packs of two, prepare **two packs**, allocating three units to demand and recording one surplus unit.
 
-## Repoets indhold
+The ledger preserves the customer-order allocations as well as the supplier pack quantity. A retry reconciles what is already saved rather than adding another two packs.
+
+## Operating principles
+
+- **Requirements before price.** Preserve promised specifications, pack contents, condition and permitted substitutions.
+- **Actual state before retries.** Verify persisted destination quantities and submission status after ambiguous responses.
+- **Landed cost before headline price.** Include freight, fees, currency and actual tax treatment.
+- **Explicit authority before execution.** Preparation does not authorize payment, purchase submission, supplier messages, inventory reservations or source-system updates.
+- **Private business data stays private.** Keep credentials, customer data, live quotes, completed company profiles and runtime ledgers outside this repo.
+
+Prepared drafts and confirmed purchases are different states. Missing stock, incompatible products, uncertain delivery and missing integrations are reported as exceptions.
+
+## Repository map
 
 ```text
-byens-it-indkoeb/
-├── SKILL.md                 # Workflow og indkøbsregler
+order-flow-skill/
+├── SKILL.md                         # Core agent workflow
+├── agents/openai.yaml               # Codex display metadata
+├── examples/
+│   └── company-profile.example.yaml # Fictional configuration template
 ├── references/
-│   └── suppliers.md         # DUTZO-spor og observeret leverandøradfærd
-├── README.md                # Installation og anvendelse
-├── LICENSE                  # MIT
-└── .gitignore               # Holder private arbejdsfiler ude
+│   ├── company-setup.md             # Sources, units and setup acceptance
+│   ├── automation.md                # Scheduling, checkpoints and recovery
+│   └── suppliers.md                 # Optional PC / DCS / Proshop example
+├── README.md
+├── LICENSE
+└── .gitignore
 ```
 
-Ordredata, kundedata, kurv-ID'er, screenshots fra indkøb, credentials og aktuelle pristabeller hører hjemme i den private opgavemappe — ikke i dette offentlige repo.
+The hardware supplier notes are a dated example, not required suppliers or universal purchasing rules. The public workflow has no company-specific brand preference or blanket substitution permission.
 
-## Forbedringer
+## Design references and reuse
 
-Åbn en issue eller pull request med et konkret problem og anonymiseret eksempel. Bevar autorisationsgrænser, ordrespecifikationer og kontrol af gemte antal. Del aldrig kundedata, kontologins eller private kurvlinks i issues.
+The workflow fits existing procurement records rather than replacing an ERP. [ERPNext's procurement cycle](https://docs.frappe.io/erpnext/procurement-cycle-overview) provides a reference for material requests, quotations and purchase orders. [n8n's human review for AI tools](https://docs.n8n.io/advanced-ai/human-in-the-loop-tools/) provides a reference for approval points in an existing orchestrator.
 
-## Licens
+These references informed the integration guidance. Neither platform is bundled or tested here; no implementation code is copied. Check the chosen platform's capabilities, maintenance and license for your own deployment.
 
-[MIT](LICENSE). Du må bruge og tilpasse skillen med licensens betingelser. DCS, Proshop og DUTZO nævnes som leverandører/produktspor; repoet er ikke et officielt projekt fra disse virksomheder.
+## Contributing
+
+Open an [issue](https://github.com/byensitmagnus/order-flow-skill/issues) or pull request with an anonymized scenario and the expected result. Improvements should preserve traceability, actual saved-quantity checks and execution authority. Never attach customer data, credentials or private cart links.
+
+## License
+
+[MIT](LICENSE). Use and adapt the skill for your business under the license terms. Third-party systems retain their own licenses and terms. This project is not affiliated with the suppliers or platforms used as examples.

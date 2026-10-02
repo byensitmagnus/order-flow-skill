@@ -1,0 +1,49 @@
+# Fictional setup template for the agent to read; not an executable integration.
+# Copy to your PRIVATE workspace as company-profile.yaml and replace values.
+company: "Example Assembly Co."
+output_language: "English"
+currency: "EUR"
+timezone: "Europe/Berlin"
+
+order_source:
+  system: "Your commerce platform or ERP"
+  connection: "Name of an already configured connector or authorized browser session"
+  eligible_statuses: ["processing"]
+  scope: "Provided per run: explicit order IDs, date range or cursor"
+
+inventory:
+  source: "Your warehouse system"
+  warehouse: "MAIN"
+  usable_stock: "On hand minus reservations, quarantine and previous allocations"
+  inbound_supply: "Count only confirmed unallocated receipts available by the deadline"
+
+catalog:
+  source: "Your SKU catalog and bills of materials"
+  order_overrides_take_precedence: true
+  substitution_policy: "Exact match unless the order/company explicitly permits an equivalent"
+
+suppliers:
+  - name: "Approved supplier A"
+    connection: "Configured account or connector name; never a password"
+  - name: "Approved supplier B"
+    connection: "Configured account or connector name; never a password"
+
+costs:
+  compare_on: "Landed cost excluding recoverable tax"
+  exchange_rates: "Verified source and timestamp when currencies differ"
+  extra_shipping: "Include fees per supplier; flag unknown charges"
+
+authorization:
+  default_mode: "prepare_only"
+  prepare: ["demand_report", "supplier_comparison", "cart_or_po_draft"]
+  purchase_submission: "Requires explicit current authorization and host approval rules"
+  payments: "Outside the default preparation workflow"
+  supplier_messages: "Require explicit authorization"
+  inventory_reservations_and_status_writebacks: "Require explicit authorization"
+
+automation:
+  trigger: "Manual initially; configure an existing scheduler only when requested"
+  run_identity: "Company + source + warehouse + fixed scope"
+  state_location: "Private persistent workspace accessible to the executor"
+  concurrent_runs: "One writer per shared destination/stock allocation scope"
+  notifications: "Configure recipient, destination and meaningful events explicitly"

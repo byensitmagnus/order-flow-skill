@@ -1,0 +1,4 @@
+interface:
+  display_name: "Order Flow"
+  short_description: "Turn customer orders into verified procurement drafts"
+  default_prompt: "Use $order-flow to reconcile this order batch with inventory and prepare verified supplier carts or purchase-order drafts."
