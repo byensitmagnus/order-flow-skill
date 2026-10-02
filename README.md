@@ -1,10 +1,12 @@
 <div align="center">
 
-# Order Flow
+# Order Flow — AI Procurement & Order Automation
+
+![Order Flow: customer orders, inventory reconciliation and supplier selection connected to a verified purchase-order draft](assets/order-flow-banner.png)
 
 ### Customer orders in. Verified procurement drafts out.
 
-A reusable AI skill for businesses that want to automate order preparation, reconcile inventory and source what they actually need.
+An open-source **Codex skill for AI procurement and order automation**. Reconcile inventory, compare suppliers and prepare verified purchase-order drafts from customer orders and bills of materials.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-2563eb.svg)](LICENSE)
 [![Language: English](https://img.shields.io/badge/Language-English-0f766e.svg)](SKILL.md)
@@ -34,6 +36,12 @@ Order Flow guides an AI agent through the preparation work between incoming cust
 | **Review and recovery** | Saved state, exception reporting and an auditable handoff. |
 
 Useful for retailers, assemblers, workshops and small manufacturers whose order requirements and stock are accessible through their configured systems.
+
+| Business workflow | Start here |
+|---|---|
+| **Ecommerce order management** | Turn scoped sales orders into procurement requirements with [a company profile](examples/company-profile.example.yaml). |
+| **Inventory reconciliation and BOM purchasing** | Allocate available stock and calculate component shortages with [the setup example](references/company-setup.md#validate-with-a-small-representative-batch). |
+| **Repeatable procurement automation** | Connect an existing executor with checkpoints and recovery using [the automation guide](references/automation.md). |
 
 ```mermaid
 flowchart LR
@@ -96,12 +104,35 @@ The ledger preserves the customer-order allocations as well as the supplier pack
 
 Prepared drafts and confirmed purchases are different states. Missing stock, incompatible products, uncertain delivery and missing integrations are reported as exceptions.
 
+## Frequently asked questions
+
+### What is an AI procurement skill?
+
+An instruction package that helps a tool-enabled AI agent follow a procurement workflow: read orders, allocate stock, compare suitable suppliers, prepare drafts and verify saved results. Order Flow provides those instructions and setup examples.
+
+### Can it automate WooCommerce or ERP purchase orders?
+
+It can guide preparation when your agent has supported access to the required commerce, inventory and purchasing systems. You must configure those connections; this repo does not include a WooCommerce plugin or an ERP adapter.
+
+### Does it place orders automatically?
+
+The default workflow prepares carts or purchase-order drafts for review. Purchase submission requires explicit authorization and the executor's approval rules. Installing the skill does not schedule runs or make purchases.
+
+### How does it avoid duplicate purchases?
+
+The workflow records allocations and saved destination quantities. On a rerun it reconciles the actual state and applies the difference; an ambiguous submission must be resolved before retrying. A connected executor must provide persistence and concurrency control.
+
+### Is this an inventory management system?
+
+No. It uses the company's inventory records to calculate procurement requirements. Inventory reservations, stock updates and source order changes are separate actions that need authorized system access.
+
 ## Repository map
 
 ```text
 order-flow-skill/
 ├── SKILL.md                         # Core agent workflow
 ├── agents/openai.yaml               # Codex display metadata
+├── assets/                          # README banner and social preview
 ├── examples/
 │   └── company-profile.example.yaml # Fictional configuration template
 ├── references/

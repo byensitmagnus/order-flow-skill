@@ -1,0 +1,31 @@
+name: Workflow feedback
+description: Report an order-preparation problem or suggest an improvement.
+title: "[Workflow]: "
+body:
+  - type: markdown
+    attributes:
+      value: "Use fictional or anonymized examples. Do not include customer details, credentials or private cart links."
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Business workflow
+      description: Describe the order source, inventory/BOM source and preparation step.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected result
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual result or proposed improvement
+    validations:
+      required: true
+  - type: textarea
+    id: example
+    attributes:
+      label: Anonymized example
+      description: Include quantities, pack sizes and saved draft state when relevant.
