@@ -54,6 +54,14 @@ flowchart LR
 
 ## Get started
 
+### Try a fictional walkthrough
+
+[Try the interactive demo](https://byensitmagnus.github.io/order-flow-skill/demo/) or follow [the five-step walkthrough](demo/README.md). You can also open [the demo source](demo/index.html) locally in your browser. See stock allocation, pack rounding, freight comparison and a rerun that adds zero duplicate packs. This is a local simulation using fictional data; it does not connect to suppliers or place purchases.
+
+![Actual browser screenshot of the fictional Order Flow demo](assets/order-flow-demo.jpg)
+
+**Project status:** Released agent instruction package with a separate educational demo. The demo's allocation and reconciliation model has a runnable check; company connectors, live purchasing and scheduled execution are not provided or certified by that check.
+
 ### 1. Install the skill
 
 With Git and Codex available, clone into the personal skills directory. If `order-flow` already exists, compare the existing installation before updating it.

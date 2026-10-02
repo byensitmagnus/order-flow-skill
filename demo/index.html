@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Order Flow demo — from customer orders to a procurement draft</title>
+<meta name="description" content="Explore a fictional Order Flow example: allocate stock, compare supplier pack prices including freight and reconcile a purchase draft without duplicate additions.">
+<style>
+:root{--navy:#12263a;--ink:#23394a;--paper:#f3f6f7;--white:#fff;--teal:#176a68;--line:#ccd8dd;--muted:#526876}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--paper);font:16px/1.55 system-ui,sans-serif}a{color:var(--teal)}header{background:var(--navy);color:var(--white);padding:24px max(24px,calc((100vw - 1120px)/2));display:flex;align-items:center;justify-content:space-between;gap:20px}header a{color:#b9e7e3}header strong{font:26px Georgia,serif}main{max-width:1120px;margin:auto;padding:40px 24px}h1{font:clamp(32px,5vw,54px)/1.1 Georgia,serif;margin:12px 0 18px;max-width:780px}h2{font:26px/1.25 Georgia,serif;margin:0 0 16px}.intro{max-width:790px}.eyebrow{color:var(--teal);font:13px ui-monospace,monospace;text-transform:uppercase;letter-spacing:.08em}.notice{padding:14px 18px;background:#e4efee;border-left:4px solid var(--teal);margin:24px 0 32px}.layout{display:grid;grid-template-columns:1.3fr 1fr;gap:24px}.panel{background:var(--white);border:1px solid var(--line);padding:26px}.orders{width:100%;border-collapse:collapse;text-align:left}.orders td,.orders th{padding:12px 0;border-bottom:1px solid var(--line)}.orders th{font-size:13px;color:var(--muted)}.orders td:last-child,.orders th:last-child{text-align:right}.stock{display:flex;justify-content:space-between;background:var(--paper);padding:16px;margin-top:20px}.stock input{width:65px;font:inherit;padding:4px;border:1px solid var(--line)}.numbers{display:flex;gap:28px;flex-wrap:wrap;margin:26px 0}.numbers strong{display:block;font:38px Georgia,serif;color:var(--navy)}.numbers span{font-size:13px;color:var(--muted)}button{font:600 15px system-ui;padding:12px 18px;border:1px solid var(--teal);background:var(--teal);color:white;cursor:pointer;border-radius:3px}button.secondary{background:white;color:var(--teal)}button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid #df944b;outline-offset:3px}.actions{display:flex;gap:12px;flex-wrap:wrap}.quote{padding:16px 0;border-bottom:1px solid var(--line)}.quote p{margin:5px 0;font-size:14px}.quote strong{font-size:18px}.badge{background:#e4efee;color:var(--teal);padding:3px 8px;font-size:12px;margin-left:8px}.draft{background:var(--navy);color:white;margin-top:24px;padding:24px}.draft h2{color:white}.draft dl{display:grid;grid-template-columns:1fr auto;gap:10px;margin:0}.draft dd{margin:0}#message{min-height:48px;margin:18px 0 0;font-size:14px}footer{border-top:1px solid var(--line);margin-top:32px;padding-top:18px;font-size:13px;color:var(--muted)}@media(max-width:760px){.layout{grid-template-columns:1fr}header{align-items:flex-start}main{padding:28px 18px}.panel{padding:20px}.numbers{gap:22px}}
+</style>
+</head>
+<body>
+<header><strong>Order Flow</strong><a href="https://github.com/byensitmagnus/order-flow-skill">View the skill on GitHub ↗</a></header>
+<main>
+<div class="eyebrow">Interactive walkthrough / fictional data</div>
+<h1>Buy the shortage.<br>Keep every order accounted for.</h1>
+<p class="intro">Two customer orders need the same item. Allocate shared stock once, compare the actual pack cost and prepare only the missing quantity.</p>
+<div class="notice"><strong>This is a local simulation.</strong> All items, suppliers and prices are fictional. It does not connect to an ERP, reserve inventory or place purchases. Draft state resets on reload.</div>
+<div class="layout">
+<section class="panel" aria-labelledby="requirements"><h2 id="requirements">1. Customer demand</h2>
+<table class="orders"><thead><tr><th>Order / SKU</th><th>Units</th></tr></thead><tbody><tr><td>DEMO-101 / COMPONENT-A</td><td>4</td></tr><tr><td>DEMO-102 / COMPONENT-A</td><td>2</td></tr></tbody></table>
+<label class="stock">Usable stock <input id="stock" type="number" min="0" max="6" value="3" aria-label="Usable stock in units"></label>
+<div class="numbers"><div><strong>6</strong><span>Units required</span></div><div><strong id="allocated">3</strong><span>Stock allocated once</span></div><div><strong id="shortage">3</strong><span>Units to procure</span></div></div>
+<p id="allocation">DEMO-101: 3 stock + 1 shortage. DEMO-102: 0 stock + 2 shortage.</p>
+<p>Change usable stock to explore the shortage. Supplier packs contain two units. All prices use the same fictional tax basis.</p>
+</section>
+<section class="panel" aria-labelledby="supply"><h2 id="supply">2. Suitable supplier</h2><div id="quotes"></div>
+<p id="selection"></p><h2>3. Procurement draft</h2>
+<div class="actions"><button id="prepare">Prepare draft</button><button id="reset" class="secondary">Reset demo</button></div>
+<div class="draft"><h2>Draft / awaiting review</h2><dl><dt>Supplier</dt><dd id="draftSupplier">—</dd><dt>Saved packs</dt><dd id="saved">0</dd><dt>Units in draft</dt><dd id="units">0</dd><dt>Surplus units</dt><dd id="surplus">0</dd><dt>Total incl. freight</dt><dd id="total">€0.00</dd></dl></div>
+<p id="message" role="status" aria-live="polite">Prepare a draft, then repeat the action: the saved quantity is reconciled, so the rerun adds zero duplicate packs.</p>
+</section></div>
+<footer>Fictional illustration of <a href="https://github.com/byensitmagnus/order-flow-skill/blob/main/SKILL.md">the Order Flow instructions</a>. Real implementations require verified inputs, stock availability by the deadline, authorized integrations, persisted checkpoints and concurrency control.</footer>
+</main>
+<script src="model.js"></script><script>
+const money = value => new Intl.NumberFormat('en-IE',{style:'currency',currency:'EUR'}).format(value);
+let saved = 0; let savedSupplier = null;
+const el = id => document.getElementById(id);
+function render(){
+ const stock = Number(el('stock').value); const plan = OrderFlowDemo.plan(stock);
+ el('allocated').textContent = plan.allocated; el('shortage').textContent = plan.shortage;
+ const first = Math.min(plan.allocated,4); const second = plan.allocated-first;
+ el('allocation').textContent = `DEMO-101: ${first} stock + ${4-first} shortage. DEMO-102: ${second} stock + ${2-second} shortage.`;
+ el('quotes').innerHTML = plan.quotes.map(q=>`<div class="quote"><strong>${q.name}</strong>${q.name===plan.selected.name?'<span class="badge">Lowest total</span>':''}<p>${plan.packs} packs × ${money(q.packPrice)} + ${money(plan.packs?q.freight:0)} freight = <strong>${money(q.total)}</strong></p><p>Pack size: 2 units · Fictional stock: sufficient · Same delivery date</p></div>`).join('');
+ el('selection').textContent = plan.packs ? `${plan.packs} packs supply ${plan.packs*2} units for ${plan.shortage} units of shortage. ${plan.packs*2-plan.shortage} unit(s) remain as surplus.` : 'Stock covers the batch. No purchase is required.';
+ el('saved').textContent=saved; el('units').textContent=saved*2; el('draftSupplier').textContent=savedSupplier?.name||'—';
+ el('surplus').textContent=Math.max(0,saved*2-plan.shortage); el('total').textContent=money(saved?saved*savedSupplier.packPrice+savedSupplier.freight:0);
+ return plan;
+}
+el('prepare').addEventListener('click',()=>{const plan=render();const delta=OrderFlowDemo.delta(plan.packs,saved);saved=plan.packs;savedSupplier=saved?plan.selected:null;render();el('message').textContent=delta>0?`Added ${delta} pack(s). Saved quantity verified in this simulation: ${saved} packs. Awaiting review; no purchase submitted.`:delta<0?`Removed ${-delta} excess pack(s) from this simulated draft. New saved quantity: ${saved} packs.`:'Draft already matches demand. Added 0 packs; no duplicate additions.';});
+el('stock').addEventListener('input',()=>{if(el('stock').value===''||!el('stock').validity.valid){el('message').textContent='Enter a whole number from 0 to 6. Unknown stock must be resolved before procurement.';el('prepare').disabled=true;return;}el('prepare').disabled=false;render();el('message').textContent='Requirements changed. Prepare the draft to reconcile it with the new shortage.';});
+el('reset').addEventListener('click',()=>{saved=0;savedSupplier=null;el('stock').value=3;el('prepare').disabled=false;render();el('message').textContent='Demo reset. No saved packs.';});render();
+</script>
+</body></html>
