@@ -1,0 +1,14 @@
+# Private indkøbsdata og lokale beviser
+/private/
+/work/
+/outputs/
+*.eml
+*.zip
+.env
+.env.*
+*.pem
+*.key
+*.log
+__pycache__/
+.DS_Store
+Thumbs.db
